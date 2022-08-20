@@ -1,6 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthModule } from './auth/auth.module';
+import { BoardModule } from './board/board.module';
+import { StateModule } from './state/state.module';
+import { TaskModule } from './task/task.module';
+import { SubTaskModule } from './sub-task/sub-task.module';
 
 @Module({
     controllers: [],
@@ -21,7 +26,17 @@ import { TypeOrmModule } from '@nestjs/typeorm';
             autoLoadEntities: true,
             synchronize: true,
 
-        })
+        }),
+
+        AuthModule,
+
+        BoardModule,
+
+        StateModule,
+
+        TaskModule,
+
+        SubTaskModule
 
     ],
 })
