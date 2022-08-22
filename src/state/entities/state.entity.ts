@@ -18,7 +18,11 @@ export class State {
     )
     board: Board;
 
-    @OneToMany(type => Task, task => task.state)
+    @OneToMany(
+        type => Task, 
+        task => task.state,
+        { eager: true }
+    )
     tasks: Task[];
 
 }

@@ -21,7 +21,11 @@ export class Task {
     )
     state: State;
 
-    @OneToMany(type => SubTask, subTask => subTask.task)
+    @OneToMany(
+        type => SubTask, 
+        subTask => subTask.task,
+        { eager: true }
+    )
     subTasks: SubTask[];
 
 }

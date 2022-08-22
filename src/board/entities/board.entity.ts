@@ -12,7 +12,7 @@ export class Board {
     title: string;
 
     @ManyToOne(
-        type => User,
+        () => User,
         user => user.boards,
         { eager: true }
     )

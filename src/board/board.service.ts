@@ -58,8 +58,8 @@ export class BoardService {
 
         try {
 
-            const boards = await this.boardRepo.findBy({
-                user: { id: userId }
+            const boards = await this.boardRepo.find({
+                where: { user: { id: userId } },
             });
 
             return boards;
@@ -68,6 +68,22 @@ export class BoardService {
             this.logger.error(error);
             throw new InternalServerErrorException("Error getting boards, check server logs");
         }
+
+    }
+
+    async getOne(boardId: string, userId: string) {
+
+        const board = await this.boardRepo.findOneBy({ id: boardId })
+
+        if (!board) {
+            throw new NotFoundException("Board not found");
+        }
+
+        if (board.user.id !== userId) {
+            throw new UnauthorizedException("User is not authorized to get this board");
+        }
+
+        return board;
 
     }
 

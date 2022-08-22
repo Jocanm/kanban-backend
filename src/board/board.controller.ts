@@ -31,4 +31,13 @@ export class BoardController {
 
         return this.boardService.delete(boardId, userId);
     }
+
+    @Get(':id')
+    @Auth()
+    async getOne(
+        @GetUser('id') userId: string,
+        @Param('id', ParseUUIDPipe) boardId: string,
+    ) {
+        return this.boardService.getOne(boardId, userId);
+    }
 }
