@@ -1,4 +1,4 @@
-import { ArrayMinSize, ArrayNotEmpty, IsArray, IsString, MinLength } from "class-validator";
+import { ArrayMinSize, IsArray, IsString, MinLength } from "class-validator";
 
 export class CreateBoardDto {
 
@@ -7,7 +7,6 @@ export class CreateBoardDto {
     title: string;
 
     @IsArray()
-    @ArrayNotEmpty()
     @ArrayMinSize(2)
     @IsString({ each: true })
     states: string[]
