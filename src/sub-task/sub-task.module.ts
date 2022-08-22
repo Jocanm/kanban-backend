@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 @Module({
   controllers: [SubTaskController],
   providers: [SubTaskService],
+  exports: [SubTaskService],
   imports: [
     TypeOrmModule.forFeature([SubTask])
   ],
