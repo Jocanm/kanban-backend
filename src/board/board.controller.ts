@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
+import { Auth, GetUser } from '../auth/decorators';
 import { BoardService } from './board.service';
 import { CreateBoardDto } from './dto/create-board.dto';
 
@@ -7,7 +8,11 @@ export class BoardController {
     constructor(private readonly boardService: BoardService) { }
 
     @Post()
-    create(@Body() createBoardDto: CreateBoardDto) {
-        return this.boardService.create(createBoardDto);
+    @Auth()
+    create(
+        @Body() createBoardDto: CreateBoardDto,
+        @GetUser('id') userId: string,
+    ) {
+        return this.boardService.create(createBoardDto, userId);
     }
 }

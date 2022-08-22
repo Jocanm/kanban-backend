@@ -11,7 +11,11 @@ export class State {
     @Column('text')
     title: string;
 
-    @ManyToOne(type => Board, board => board.states)
+    @ManyToOne(
+        type => Board,
+        board => board.states,
+        { eager: true }
+    )
     board: Board;
 
     @OneToMany(type => Task, task => task.state)

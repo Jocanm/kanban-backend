@@ -10,5 +10,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
   imports: [
     TypeOrmModule.forFeature([State])
   ],
+  exports: [TypeOrmModule]
 })
 export class StateModule { }

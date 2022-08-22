@@ -6,6 +6,7 @@ import { LoginUserDto, RegisterUserDto } from './dto';
 import { User } from './entities/user.entity';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import * as bcrypt from 'bcrypt';
+import { BoardService } from '../board/board.service';
 
 const loggerInstance = new Logger('AuthService');
 
@@ -17,7 +18,8 @@ export class AuthService {
     constructor(
         @InjectRepository(User)
         private readonly userRepository: Repository<User>,
-        private readonly jwtService: JwtService
+        private readonly jwtService: JwtService,
+        private readonly boardService: BoardService
     ) { }
 
     async createUser(registerUserDto: RegisterUserDto) {
@@ -25,6 +27,11 @@ export class AuthService {
         try {
             const user = this.userRepository.create(registerUserDto);
             const { password, ...userCreated } = await this.userRepository.save(user);
+
+            await this.boardService.create({
+                title: 'Default Board',
+                states: ['TODO', 'DOING', 'DONE'],
+            }, userCreated.id);
 
             const token = this.generateJwt({
                 id: user.id,

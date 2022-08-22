@@ -7,6 +7,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategies/jwt-strategy';
+import { BoardModule } from '../board/board.module';
 
 @Module({
     controllers: [AuthController],
@@ -16,6 +17,8 @@ import { JwtStrategy } from './strategies/jwt-strategy';
     exports: [PassportModule, JwtModule, TypeOrmModule, JwtStrategy],
 
     imports: [
+
+        BoardModule,
 
         ConfigModule,
 
