@@ -14,6 +14,7 @@ export class Board {
     @ManyToOne(
         type => User,
         user => user.boards,
+        { eager: true }
     )
     user: User;
 

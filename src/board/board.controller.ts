@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Put } from '@nestjs/common';
 import { Auth, GetUser } from '../auth/decorators';
 import { BoardService } from './board.service';
 import { CreateBoardDto } from './dto/create-board.dto';
@@ -20,5 +20,15 @@ export class BoardController {
     @Auth()
     async getAll(@GetUser('id') userId: string) {
         return this.boardService.getAllBoardsOfUser(userId);
+    }
+
+    @Delete(':id')
+    @Auth()
+    async update(
+        @GetUser('id') userId: string,
+        @Param('id', ParseUUIDPipe) boardId: string,
+    ) {
+
+        return this.boardService.delete(boardId, userId);
     }
 }

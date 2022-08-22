@@ -14,6 +14,7 @@ export class State {
     @ManyToOne(
         type => Board,
         board => board.states,
+        { onDelete: 'CASCADE' }
     )
     board: Board;
 

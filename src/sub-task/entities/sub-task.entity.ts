@@ -13,7 +13,11 @@ export class SubTask {
     @Column('bool', { default: false })
     done: boolean;
 
-    @ManyToOne(type => Task, task => task.subTasks)
+    @ManyToOne(
+        type => Task,
+        task => task.subTasks,
+        { onDelete: 'CASCADE' }
+    )
     task: Task;
 
 }

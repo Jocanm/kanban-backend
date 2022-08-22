@@ -1,4 +1,4 @@
-import { Injectable, Logger, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, Logger, InternalServerErrorException, NotFoundException, UnauthorizedException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { Board } from '../board/entities/board.entity';
@@ -67,6 +67,27 @@ export class BoardService {
         } catch (error) {
             this.logger.error(error);
             throw new InternalServerErrorException("Error getting boards, check server logs");
+        }
+
+    }
+
+    async delete(boardId: string, userId: string) {
+
+
+        const board = await this.boardRepo.findOneBy({ id: boardId })
+
+        if (!board) {
+            throw new NotFoundException("Board not found");
+        }
+
+        if (board.user.id !== userId) {
+            throw new UnauthorizedException("User is not authorized to delete this board");
+        }
+
+        await this.boardRepo.remove(board);
+
+        return {
+            message: "Board deleted"
         }
 
     }

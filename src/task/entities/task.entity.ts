@@ -14,7 +14,11 @@ export class Task {
     @Column('text')
     description: string;
 
-    @ManyToOne(type => State, state => state.tasks)
+    @ManyToOne(
+        type => State, 
+        state => state.tasks,
+        { onDelete: 'CASCADE' }
+    )
     state: State;
 
     @OneToMany(type => SubTask, subTask => subTask.task)
