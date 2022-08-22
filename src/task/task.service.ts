@@ -18,7 +18,7 @@ export class TaskService {
 
         try {
 
-            const { subTasks, ...taskData } = createTaskDto;
+            const { subTasks = [], ...taskData } = createTaskDto;
 
             const task = this.taskRepo.create({
                 ...taskData,
