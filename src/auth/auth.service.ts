@@ -2,9 +2,10 @@ import { BadRequestException, Injectable, InternalServerErrorException, Logger }
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { RegisterUserDto } from './dto';
+import { LoginUserDto, RegisterUserDto } from './dto';
 import { User } from './entities/user.entity';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
+import * as bcrypt from 'bcrypt';
 
 const loggerInstance = new Logger('AuthService');
 
@@ -23,7 +24,7 @@ export class AuthService {
 
         try {
             const user = this.userRepository.create(registerUserDto);
-            const {password, ...userCreated} = await this.userRepository.save(user);
+            const { password, ...userCreated } = await this.userRepository.save(user);
 
             const token = this.generateJwt({
                 id: user.id,
@@ -40,7 +41,43 @@ export class AuthService {
 
     }
 
-    private generateJwt(payload: JwtPayload){
+    async login(loginUserDto: LoginUserDto) {
+
+        const { email, password } = loginUserDto;
+
+
+        const user = await this.userRepository.findOne({
+            where: { email },
+            select: ['id', 'email', 'password', 'fullname']
+        });
+
+        if (!user || (!bcrypt.compareSync(password, user?.password))) {
+            throw new BadRequestException('Invalid credentials');
+        }
+
+        const token = this.generateJwt({
+            id: user.id,
+        })
+
+        delete user.password;
+
+        return {
+            ...user,
+            token
+        }
+
+    }
+
+    validateToken(user: User) {
+        return {
+            ...user,
+            token: this.generateJwt({
+                id: user.id,
+            })
+        }
+    }
+
+    private generateJwt(payload: JwtPayload) {
         return this.jwtService.sign(payload);
     }
 
