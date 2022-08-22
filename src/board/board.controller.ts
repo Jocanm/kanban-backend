@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { Auth, GetUser } from '../auth/decorators';
 import { BoardService } from './board.service';
 import { CreateBoardDto } from './dto/create-board.dto';
@@ -14,5 +14,11 @@ export class BoardController {
         @GetUser('id') userId: string,
     ) {
         return this.boardService.create(createBoardDto, userId);
+    }
+
+    @Get()
+    @Auth()
+    async getAll(@GetUser('id') userId: string) {
+        return this.boardService.getAllBoardsOfUser(userId);
     }
 }

@@ -36,8 +36,8 @@ export class BoardService {
 
             states.forEach(title => {
                 const state = this.stateRepo.create({
-                    title, board: 
-                    { id: boardCreated.id }
+                    title, board:
+                        { id: boardCreated.id }
                 });
                 statesToCreate.push(state);
             })
@@ -50,6 +50,23 @@ export class BoardService {
 
             this.logger.error(error);
             throw new InternalServerErrorException("Error creating board, check server logs");
+        }
+
+    }
+
+    async getAllBoardsOfUser(userId: string) {
+
+        try {
+
+            const boards = await this.boardRepo.findBy({
+                user: { id: userId }
+            });
+
+            return boards;
+
+        } catch (error) {
+            this.logger.error(error);
+            throw new InternalServerErrorException("Error getting boards, check server logs");
         }
 
     }

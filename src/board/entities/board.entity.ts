@@ -11,10 +11,17 @@ export class Board {
     @Column('text')
     title: string;
 
-    @ManyToOne(type => User, user => user.boards)
+    @ManyToOne(
+        type => User,
+        user => user.boards,
+    )
     user: User;
 
-    @OneToMany(() => State, state => state.board)
+    @OneToMany(
+        () => State,
+        state => state.board,
+        { eager: true }
+    )
     states: State[];
 
 }

@@ -29,7 +29,7 @@ export class AuthService {
             const { password, ...userCreated } = await this.userRepository.save(user);
 
             await this.boardService.create({
-                title: 'Default Board',
+                title: 'Demo Board',
                 states: ['TODO', 'DOING', 'DONE'],
             }, userCreated.id);
 
