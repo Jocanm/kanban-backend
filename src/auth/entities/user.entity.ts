@@ -1,5 +1,5 @@
 import { BeforeInsert, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import bcrypt from 'bcrypt'
+import * as bcrypt from 'bcrypt'
 import { Board } from "src/board/entities/board.entity";
 
 @Entity()
@@ -14,7 +14,7 @@ export class User {
     @Column('text', { unique: true })
     email: string;
 
-    @Column('text')
+    @Column('text', { select: false })
     password: string
 
     @OneToMany(type => Board, board => board.user)
