@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { Task } from './entities/task.entity';
@@ -40,6 +40,20 @@ export class TaskService {
             throw new InternalServerErrorException("Error creating task");
 
         }
+
+    }
+
+    async delete(taskId: string) {
+
+        const task = await this.taskRepo.findOneBy({ id: taskId });
+
+        if (!task) { throw new NotFoundException("Task not found") }
+
+        await this.taskRepo.remove(task);
+
+        return {
+            message: "Task deleted",
+        };
 
     }
 }
