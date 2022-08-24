@@ -1,9 +1,11 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateTaskDto } from './dto/create-task.dto';
-import { Task } from './entities/task.entity';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { SubTaskService } from '../sub-task/sub-task.service';
+import { CreateTaskDto } from './dto/create-task.dto';
+import { UpdateTaskDto } from './dto/update-task.dto';
+import { Task } from './entities/task.entity';
+import { SubTask } from '../sub-task/entities/sub-task.entity';
 
 @Injectable()
 export class TaskService {
@@ -12,6 +14,7 @@ export class TaskService {
         @InjectRepository(Task)
         private taskRepo: Repository<Task>,
         private readonly subTaskService: SubTaskService,
+        private readonly dataSource: DataSource
     ) { }
 
     async create(createTaskDto: CreateTaskDto, stateId: string) {
@@ -54,6 +57,63 @@ export class TaskService {
         return {
             message: "Task deleted",
         };
+
+    }
+
+    async update(taskId: string, updateTaskDto: UpdateTaskDto) {
+
+        const { subTasks, stateId, ...toUpdate } = updateTaskDto;
+
+        const newTask = await this.taskRepo.preload({
+            id: taskId,
+            ...toUpdate,
+            state: { id: stateId },
+        });
+
+        if (!newTask) { throw new NotFoundException("Task not found") }
+
+        // Query runner
+
+        const queryRunner = this.dataSource.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+
+        try {
+
+            await queryRunner.manager.delete(SubTask, { task: taskId })
+
+            let subTasksToCreate = [];
+
+            subTasks.forEach(task => {
+
+                subTasksToCreate.push(
+                    queryRunner.manager.create(SubTask, {
+                        task: { id: taskId },
+                        title: task.title,
+                        done: task.done,
+                    })
+                )
+
+            })
+
+            await queryRunner.manager.save(subTasksToCreate);
+
+            await queryRunner.manager.save(newTask)
+            await queryRunner.commitTransaction();
+            await queryRunner.release();
+
+            return {
+                ...newTask,
+                subTasks: subTasksToCreate,
+            };
+
+        } catch (error) {
+
+            await queryRunner.rollbackTransaction();
+            await queryRunner.release();
+            throw new InternalServerErrorException("Error updating task");
+
+        }
 
     }
 }
